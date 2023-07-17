@@ -6,6 +6,7 @@ import (
 	"app/src/repositories"
 	"app/src/services"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -16,7 +17,7 @@ import (
 // user -> controller -> services -> repositories (сущность)
 
 func main() {
-	database, err := database.New()
+	dataBase, err := database.New()
 
 	if err != nil {
 		fmt.Println(err)
@@ -27,7 +28,7 @@ func main() {
 	userController := controllers.New(
 		services.New(
 			repositories.New(
-				database,
+				dataBase,
 			),
 		),
 	)
@@ -48,5 +49,6 @@ func main() {
 		router.Delete("/{id}", userController.Delete)
 	})
 
-	http.ListenAndServe(":80", router)
+	log.Fatal(http.ListenAndServe(":80", router))
+
 }
