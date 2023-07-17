@@ -44,6 +44,16 @@ func (service *UsersService) FindById(id *pgtype.UUID) (*entities.UserDto, error
 	return toUserDto(user), nil
 }
 
+func (service *UsersService) FindByEmail(email string) (*entities.UserDto, error) {
+	user, err := service.repo.FindByEmail(email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return toUserDto(user), nil
+}
+
 func (service *UsersService) Create(createUserDto *entities.CreateUserDto) (*entities.UserDto, error) {
 	user, err := service.repo.Create(createUserDto)
 

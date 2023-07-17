@@ -13,6 +13,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+// user -> controller -> services -> repositories (сущность)
+
 func main() {
 	database, err := database.New()
 
@@ -40,6 +42,7 @@ func main() {
 	router.Route("/users", func(router chi.Router) {
 		router.Get("/", userController.FindAll)
 		router.Get("/{id}", userController.FindById)
+		router.Get("/{email}", userController.FindByEmail)
 		router.Post("/", userController.Create)
 		router.Put("/", userController.Update)
 		router.Delete("/{id}", userController.Delete)

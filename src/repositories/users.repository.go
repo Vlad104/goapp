@@ -73,6 +73,27 @@ func (repo *UsersRepository) FindById(id *pgtype.UUID) (*entities.User, error) {
 	return &user, nil
 }
 
+func (repo *UsersRepository) FindByEmail(email string) (*entities.User, error) {
+	user := entities.User{}
+
+	err := repo.DataBase.Conn.QueryRow(
+		context.Background(),
+		`SELECT * FROM "users" WHERE "email" = $1`,
+		email,
+	).Scan(
+		&user.ID,
+		&user.Email,
+		&user.Password,
+	)
+
+	if err != nil {
+		log.Printf("%v", err)
+		return nil, common.NotFoundError
+	}
+
+	return &user, nil
+}
+
 func (repo *UsersRepository) Create(user *entities.CreateUserDto) (*entities.User, error) {
 	var id pgtype.UUID
 

@@ -29,6 +29,11 @@ func (controller *UserController) FindAll(w http.ResponseWriter, r *http.Request
 
 	response, err := json.Marshal(users)
 
+	if err != nil {
+		common.HandleHttpError(w, err)
+		return
+	}
+
 	w.Write(response)
 }
 
@@ -49,6 +54,37 @@ func (controller *UserController) FindById(w http.ResponseWriter, r *http.Reques
 	}
 
 	response, err := json.Marshal(users)
+
+	if err != nil {
+		common.HandleHttpError(w, err)
+		return
+	}
+	
+	w.Write(response)
+}
+
+func (controller *UserController) FindByEmail(w http.ResponseWriter, r *http.Request) {
+	email := chi.URLParam(r, "email")
+
+	if len(email) == 0 {
+		log.Printf("could not found email %v", chi.URLParam(r, "email"))
+		common.HandleHttpError(w, common.LogicError)
+		return
+	}
+
+	users, err := controller.service.FindByEmail(email)
+
+	if err != nil {
+		common.HandleHttpError(w, err)
+		return
+	}
+
+	response, err := json.Marshal(users)
+
+	if err != nil {
+		common.HandleHttpError(w, err)
+		return
+	}
 
 	w.Write(response)
 }
@@ -71,6 +107,11 @@ func (controller *UserController) Create(w http.ResponseWriter, r *http.Request)
 
 	response, err := json.Marshal(user)
 
+	if err != nil {
+		common.HandleHttpError(w, err)
+		return
+	}
+	
 	w.Write(response)
 }
 
@@ -91,6 +132,11 @@ func (controller *UserController) Update(w http.ResponseWriter, r *http.Request)
 	}
 
 	response, err := json.Marshal(user)
+
+	if err != nil {
+		common.HandleHttpError(w, err)
+		return
+	}
 
 	w.Write(response)
 }
