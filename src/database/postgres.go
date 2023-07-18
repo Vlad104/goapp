@@ -11,18 +11,19 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+// DataBase представляет соединение с базой данных.
 type DataBase struct {
 	Conn *pgx.Conn
 }
 
+// New создает новое соединение с базой данных и выполняет миграции.
 func New() (*DataBase, error) {
-	connUrl := createConnectionUrl()
-	connConfig, _ := pgx.ParseConfig(connUrl)
+	connURL := createConnectionURL()
+	connConfig, _ := pgx.ParseConfig(connURL)
 
 	conn, err := pgx.ConnectConfig(context.Background(), connConfig)
-
 	if err != nil {
-		return nil, fmt.Errorf("Unable to connection to database: %v\n", err)
+		return nil, fmt.Errorf("unable to connect to the database: %v\n", err)
 	}
 
 	log.Printf("Postgres connected")
@@ -33,29 +34,29 @@ func New() (*DataBase, error) {
 
 	m, err := migrate.New(
 		"file://src/database/migrations",
-		connUrl,
+		connURL,
 	)
-
 	if err != nil {
-		return nil, fmt.Errorf("Unable to migrate to database: %v\n", err)
+		return nil, fmt.Errorf("unable to migrate the database: %v\n", err)
 	}
 
 	err = m.Up()
-
 	if err != nil {
-		log.Printf("Unable to migrate to database: %v\n", err)
+		log.Printf("Unable to migrate the database: %v\n", err)
 	}
 
 	return &db, nil
 }
 
+// Close закрывает соединение с базой данных.
 func (db *DataBase) Close() {
 	if db.Conn != nil {
 		db.Conn.Close(context.Background())
 	}
 }
 
-func createConnectionUrl() string {
+// createConnectionURL создает URL для подключения к базе данных.
+func createConnectionURL() string {
 	host := "127.0.0.1"
 	port := 5432
 	user := "postgres"

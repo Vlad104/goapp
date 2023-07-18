@@ -10,14 +10,17 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+// UsersRepository представляет репозиторий пользователей.
 type UsersRepository struct {
 	*database.DataBase
 }
 
+// New создает новый экземпляр UsersRepository.
 func New(pg *database.DataBase) *UsersRepository {
 	return &UsersRepository{pg}
 }
 
+// FindAll возвращает всех пользователей.
 func (repo *UsersRepository) FindAll() ([]entities.User, error) {
 	rows, err := repo.DataBase.Conn.Query(
 		context.Background(),
@@ -52,6 +55,7 @@ func (repo *UsersRepository) FindAll() ([]entities.User, error) {
 	return users, nil
 }
 
+// FindById возвращает пользователя по идентификатору.
 func (repo *UsersRepository) FindById(id *pgtype.UUID) (*entities.User, error) {
 	user := entities.User{}
 
@@ -73,6 +77,7 @@ func (repo *UsersRepository) FindById(id *pgtype.UUID) (*entities.User, error) {
 	return &user, nil
 }
 
+// FindByEmail возвращает пользователя по адресу электронной почты.
 func (repo *UsersRepository) FindByEmail(email string) (*entities.User, error) {
 	user := entities.User{}
 
@@ -94,6 +99,7 @@ func (repo *UsersRepository) FindByEmail(email string) (*entities.User, error) {
 	return &user, nil
 }
 
+// Create создает нового пользователя.
 func (repo *UsersRepository) Create(user *entities.CreateUserDto) (*entities.User, error) {
 	var id pgtype.UUID
 
@@ -118,6 +124,7 @@ func (repo *UsersRepository) Create(user *entities.CreateUserDto) (*entities.Use
 	return &result, nil
 }
 
+// Update обновляет информацию о пользователе.
 func (repo *UsersRepository) Update(user *entities.UpdateUserDto) (*entities.User, error) {
 	_, err := repo.DataBase.Conn.Exec(
 		context.Background(),
@@ -137,6 +144,7 @@ func (repo *UsersRepository) Update(user *entities.UpdateUserDto) (*entities.Use
 	return &result, nil
 }
 
+// Delete удаляет пользователя по идентификатору.
 func (repo *UsersRepository) Delete(id *pgtype.UUID) error {
 	_, err := repo.DataBase.Conn.Exec(
 		context.Background(),
