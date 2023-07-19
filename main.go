@@ -19,20 +19,23 @@ import (
 func main() {
 	// Создаем новое подключение к базе данных
 	dataBase, err := database.New()
+
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 		return
 	}
 
-	// Создаем экземпляр контроллера пользователя
-	userController := controllers.New(
-		services.New(
-			repositories.New(
-				dataBase,
-			),
+	usersService := services.NewUserServices(
+		repositories.NewUserRepositories(
+			dataBase,
 		),
 	)
+
+	// Создаем экземпляр контроллера пользователя
+	usersController := controllers.NewUserController(usersService)
+
+	authController := controllers.NewAuthController(services.NewAuthServices(usersService))
 
 	// Создаем новый роутер Chi
 	router := chi.NewRouter()
@@ -46,18 +49,22 @@ func main() {
 	// Настраиваем маршруты для роутера
 	router.Route("/users", func(router chi.Router) {
 		// Обработка GET-запросов
-		router.Get("/", userController.FindAll)          // Получить всех пользователей
-		router.Get("/{id}", userController.FindById)    // Получить пользователя по идентификатору
-		router.Get("/{email}", userController.FindByEmail) // Получить пользователя по адресу электронной почты
+		router.Get("/", usersController.FindAll)            // Получить всех пользователей
+		router.Get("/{id}", usersController.FindById)       // Получить пользователя по идентификатору
+		router.Get("/{email}", usersController.FindByEmail) // Получить пользователя по адресу электронной почты
 
 		// Обработка POST-запроса
-		router.Post("/", userController.Create)          // Создать нового пользователя
+		router.Post("/", usersController.Create) // Создать нового пользователя
 
 		// Обработка PUT-запроса
-		router.Put("/", userController.Update)           // Обновить информацию о пользователе
+		router.Put("/", usersController.Update) // Обновить информацию о пользователе
 
 		// Обработка DELETE-запроса
-		router.Delete("/{id}", userController.Delete)    // Удалить пользователя по идентификатору
+		router.Delete("/{id}", usersController.Delete) // Удалить пользователя по идентификатору
+	})
+
+	router.Route("/auth", func(router chi.Router) {
+		router.Post("/login", authController.Login)
 	})
 
 	// Запуск HTTP-сервера и обработка запросов с помощью роутера
