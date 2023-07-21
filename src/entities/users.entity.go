@@ -12,7 +12,7 @@ type User struct {
 type UserDto struct {
 	ID    pgtype.UUID `json:"id"`
 	Email string      `json:"email"`
-	Password string
+	Password string   `json:"-"`
 }
 
 type CreateUserDto struct {

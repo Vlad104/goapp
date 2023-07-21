@@ -2,6 +2,7 @@ package services
 
 import (
 	"app/src/entities"
+	"app/src/common"
 )
 
 func NewAuthServices(us *UsersService) *AuthService {
@@ -16,12 +17,12 @@ func (authService *AuthService) Login(loginDto *entities.LoginDto) (*entities.Au
 	// Находим пользователя по электронной почте
 	user, err := authService.usersService.FindByEmail(loginDto.Email)
 	if err != nil {
-		return nil, err
+		return nil, common.ForbiddenError
 	}
 
 	// Проверяем совпадение паролей
 	if user.Password != loginDto.Password {
-		return nil, err
+		return nil, common.NotFoundError
 	}
 
 	// Создаем AccessToken (логика генерации accessToken будет реализована отдельно)

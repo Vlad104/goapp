@@ -11,18 +11,18 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// UserController представляет контроллер пользователей.
-type UserController struct {
+// UsersController представляет контроллер пользователей.
+type UsersController struct {
 	service *services.UsersService
 }
 
-// NewUserController создает новый экземпляр UserController.
-func NewUserController(service *services.UsersService) *UserController {
-	return &UserController{service}
+// NewUsersController создает новый экземпляр UserController.
+func NewUsersController(service *services.UsersService) *UsersController {
+	return &UsersController{service}
 }
 
 // FindAll обрабатывает запрос на получение всех пользователей.
-func (uc *UserController) FindAll(w http.ResponseWriter, r *http.Request) {
+func (uc *UsersController) FindAll(w http.ResponseWriter, r *http.Request) {
 	users, err := uc.service.FindAll()
 
 	if err != nil {
@@ -41,7 +41,7 @@ func (uc *UserController) FindAll(w http.ResponseWriter, r *http.Request) {
 }
 
 // FindById обрабатывает запрос на получение пользователя по идентификатору.
-func (uc *UserController) FindById(w http.ResponseWriter, r *http.Request) {
+func (uc *UsersController) FindById(w http.ResponseWriter, r *http.Request) {
 	id, err := common.UUIDFromString(chi.URLParam(r, "id"))
 
 	if err != nil {
@@ -68,7 +68,7 @@ func (uc *UserController) FindById(w http.ResponseWriter, r *http.Request) {
 }
 
 // FindByEmail обрабатывает запрос на получение пользователя по адресу электронной почты.
-func (uc *UserController) FindByEmail(w http.ResponseWriter, r *http.Request) {
+func (uc *UsersController) FindByEmail(w http.ResponseWriter, r *http.Request) {
 	email := chi.URLParam(r, "email")
 
 	if len(email) == 0 {
@@ -95,7 +95,7 @@ func (uc *UserController) FindByEmail(w http.ResponseWriter, r *http.Request) {
 }
 
 // Create обрабатывает запрос на создание нового пользователя.
-func (uc *UserController) Create(w http.ResponseWriter, r *http.Request) {
+func (uc *UsersController) Create(w http.ResponseWriter, r *http.Request) {
 	var createUserDto entities.CreateUserDto
 	err := json.NewDecoder(r.Body).Decode(&createUserDto)
 
@@ -122,7 +122,7 @@ func (uc *UserController) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 // Update обрабатывает запрос на обновление информации о пользователе.
-func (uc *UserController) Update(w http.ResponseWriter, r *http.Request) {
+func (uc *UsersController) Update(w http.ResponseWriter, r *http.Request) {
 	var updateUserDto entities.UpdateUserDto
 	err := json.NewDecoder(r.Body).Decode(&updateUserDto)
 
@@ -149,7 +149,7 @@ func (uc *UserController) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 // Delete обрабатывает запрос на удаление пользователя по идентификатору.
-func (uc *UserController) Delete(w http.ResponseWriter, r *http.Request) {
+func (uc *UsersController) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := common.UUIDFromString(chi.URLParam(r, "id"))
 
 	if err != nil {
