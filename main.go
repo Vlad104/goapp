@@ -33,7 +33,7 @@ func main() {
 	)
 
 	// Создаем экземпляр контроллера пользователя
-	usersController := controllers.NewUserController(usersService)
+	usersController := controllers.NewUsersController(usersService)
 
 	authController := controllers.NewAuthController(services.NewAuthServices(usersService))
 

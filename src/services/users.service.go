@@ -13,7 +13,7 @@ type UsersService struct {
 }
 
 // New создает новый экземпляр UsersService.
-func NewUserServices(repo *repositories.UsersRepository) *UsersService {
+func NewUsersServices(repo *repositories.UsersRepository) *UsersService {
 	return &UsersService{repo}
 }
 
