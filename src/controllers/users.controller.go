@@ -16,14 +16,14 @@ type UserController struct {
 	service *services.UsersService
 }
 
-// New создает новый экземпляр UserController.
-func New(service *services.UsersService) *UserController {
+// NewUserController создает новый экземпляр UserController.
+func NewUserController(service *services.UsersService) *UserController {
 	return &UserController{service}
 }
 
 // FindAll обрабатывает запрос на получение всех пользователей.
-func (controller *UserController) FindAll(w http.ResponseWriter, r *http.Request) {
-	users, err := controller.service.FindAll()
+func (uc *UserController) FindAll(w http.ResponseWriter, r *http.Request) {
+	users, err := uc.service.FindAll()
 
 	if err != nil {
 		common.HandleHttpError(w, err)
@@ -41,7 +41,7 @@ func (controller *UserController) FindAll(w http.ResponseWriter, r *http.Request
 }
 
 // FindById обрабатывает запрос на получение пользователя по идентификатору.
-func (controller *UserController) FindById(w http.ResponseWriter, r *http.Request) {
+func (uc *UserController) FindById(w http.ResponseWriter, r *http.Request) {
 	id, err := common.UUIDFromString(chi.URLParam(r, "id"))
 
 	if err != nil {
@@ -50,7 +50,7 @@ func (controller *UserController) FindById(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	users, err := controller.service.FindById(id)
+	users, err := uc.service.FindById(id)
 
 	if err != nil {
 		common.HandleHttpError(w, err)
@@ -63,12 +63,12 @@ func (controller *UserController) FindById(w http.ResponseWriter, r *http.Reques
 		common.HandleHttpError(w, err)
 		return
 	}
-	
+
 	w.Write(response)
 }
 
 // FindByEmail обрабатывает запрос на получение пользователя по адресу электронной почты.
-func (controller *UserController) FindByEmail(w http.ResponseWriter, r *http.Request) {
+func (uc *UserController) FindByEmail(w http.ResponseWriter, r *http.Request) {
 	email := chi.URLParam(r, "email")
 
 	if len(email) == 0 {
@@ -77,7 +77,7 @@ func (controller *UserController) FindByEmail(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	users, err := controller.service.FindByEmail(email)
+	users, err := uc.service.FindByEmail(email)
 
 	if err != nil {
 		common.HandleHttpError(w, err)
@@ -95,7 +95,7 @@ func (controller *UserController) FindByEmail(w http.ResponseWriter, r *http.Req
 }
 
 // Create обрабатывает запрос на создание нового пользователя.
-func (controller *UserController) Create(w http.ResponseWriter, r *http.Request) {
+func (uc *UserController) Create(w http.ResponseWriter, r *http.Request) {
 	var createUserDto entities.CreateUserDto
 	err := json.NewDecoder(r.Body).Decode(&createUserDto)
 
@@ -104,7 +104,7 @@ func (controller *UserController) Create(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	user, err := controller.service.Create(&createUserDto)
+	user, err := uc.service.Create(&createUserDto)
 
 	if err != nil {
 		common.HandleHttpError(w, err)
@@ -117,12 +117,12 @@ func (controller *UserController) Create(w http.ResponseWriter, r *http.Request)
 		common.HandleHttpError(w, err)
 		return
 	}
-	
+
 	w.Write(response)
 }
 
 // Update обрабатывает запрос на обновление информации о пользователе.
-func (controller *UserController) Update(w http.ResponseWriter, r *http.Request) {
+func (uc *UserController) Update(w http.ResponseWriter, r *http.Request) {
 	var updateUserDto entities.UpdateUserDto
 	err := json.NewDecoder(r.Body).Decode(&updateUserDto)
 
@@ -131,7 +131,7 @@ func (controller *UserController) Update(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	user, err := controller.service.Update(&updateUserDto)
+	user, err := uc.service.Update(&updateUserDto)
 
 	if err != nil {
 		common.HandleHttpError(w, err)
@@ -149,7 +149,7 @@ func (controller *UserController) Update(w http.ResponseWriter, r *http.Request)
 }
 
 // Delete обрабатывает запрос на удаление пользователя по идентификатору.
-func (controller *UserController) Delete(w http.ResponseWriter, r *http.Request) {
+func (uc *UserController) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := common.UUIDFromString(chi.URLParam(r, "id"))
 
 	if err != nil {
@@ -158,7 +158,7 @@ func (controller *UserController) Delete(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = controller.service.Delete(id)
+	err = uc.service.Delete(id)
 
 	if err != nil {
 		common.HandleHttpError(w, err)

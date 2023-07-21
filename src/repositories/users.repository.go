@@ -16,7 +16,7 @@ type UsersRepository struct {
 }
 
 // New создает новый экземпляр UsersRepository.
-func New(pg *database.DataBase) *UsersRepository {
+func NewUserRepositories(pg *database.DataBase) *UsersRepository {
 	return &UsersRepository{pg}
 }
 

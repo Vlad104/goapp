@@ -13,13 +13,13 @@ type UsersService struct {
 }
 
 // New создает новый экземпляр UsersService.
-func New(repo *repositories.UsersRepository) *UsersService {
+func NewUserServices(repo *repositories.UsersRepository) *UsersService {
 	return &UsersService{repo}
 }
 
 // FindAll возвращает всех пользователей.
-func (service *UsersService) FindAll() ([]entities.UserDto, error) {
-	users, err := service.repo.FindAll()
+func (us *UsersService) FindAll() ([]entities.UserDto, error) {
+	users, err := us.repo.FindAll()
 
 	if err != nil {
 		return nil, err
@@ -28,18 +28,15 @@ func (service *UsersService) FindAll() ([]entities.UserDto, error) {
 	result := make([]entities.UserDto, len(users))
 
 	for i, user := range users {
-		result[i] = entities.UserDto{
-			ID:    user.ID,
-			Email: user.Email,
-		}
+		result[i] = *toUserDto(&user)
 	}
 
 	return result, nil
 }
 
 // FindById возвращает пользователя по идентификатору.
-func (service *UsersService) FindById(id *pgtype.UUID) (*entities.UserDto, error) {
-	user, err := service.repo.FindById(id)
+func (us *UsersService) FindById(id *pgtype.UUID) (*entities.UserDto, error) {
+	user, err := us.repo.FindById(id)
 
 	if err != nil {
 		return nil, err
@@ -49,8 +46,8 @@ func (service *UsersService) FindById(id *pgtype.UUID) (*entities.UserDto, error
 }
 
 // FindByEmail возвращает пользователя по адресу электронной почты.
-func (service *UsersService) FindByEmail(email string) (*entities.UserDto, error) {
-	user, err := service.repo.FindByEmail(email)
+func (us *UsersService) FindByEmail(email string) (*entities.UserDto, error) {
+	user, err := us.repo.FindByEmail(email)
 
 	if err != nil {
 		return nil, err
@@ -60,8 +57,8 @@ func (service *UsersService) FindByEmail(email string) (*entities.UserDto, error
 }
 
 // Create создает нового пользователя.
-func (service *UsersService) Create(createUserDto *entities.CreateUserDto) (*entities.UserDto, error) {
-	user, err := service.repo.Create(createUserDto)
+func (us *UsersService) Create(createUserDto *entities.CreateUserDto) (*entities.UserDto, error) {
+	user, err := us.repo.Create(createUserDto)
 
 	if err != nil {
 		return nil, err
@@ -71,8 +68,8 @@ func (service *UsersService) Create(createUserDto *entities.CreateUserDto) (*ent
 }
 
 // Update обновляет информацию о пользователе.
-func (service *UsersService) Update(updateUserDto *entities.UpdateUserDto) (*entities.UserDto, error) {
-	user, err := service.repo.Update(updateUserDto)
+func (us *UsersService) Update(updateUserDto *entities.UpdateUserDto) (*entities.UserDto, error) {
+	user, err := us.repo.Update(updateUserDto)
 
 	if err != nil {
 		return nil, err
@@ -82,8 +79,8 @@ func (service *UsersService) Update(updateUserDto *entities.UpdateUserDto) (*ent
 }
 
 // Delete удаляет пользователя по идентификатору.
-func (service *UsersService) Delete(id *pgtype.UUID) error {
-	return service.repo.Delete(id)
+func (us *UsersService) Delete(id *pgtype.UUID) error {
+	return us.repo.Delete(id)
 }
 
 // toUserDto преобразует сущность User в UserDto.
@@ -91,5 +88,6 @@ func toUserDto(user *entities.User) *entities.UserDto {
 	return &entities.UserDto{
 		ID:    user.ID,
 		Email: user.Email,
+		Password: user.Password,
 	}
 }
