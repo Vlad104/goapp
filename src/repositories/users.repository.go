@@ -7,8 +7,6 @@ import (
 	"context"
 	"log"
 
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -101,20 +99,10 @@ func (repo *UsersRepository) FindByEmail(email string) (*entities.User, error) {
 	return &user, nil
 }
 
-func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
-}
-
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
-}
-
 // Create создает нового пользователя.
 func (repo *UsersRepository) Create(user *entities.CreateUserDto) (*entities.User, error) {
 	var id pgtype.UUID
-	hash, err := HashPassword(user.Password)
+	hash, err := common.HashPassword(user.Password)
 	
 	if err != nil{
 		log.Printf("%v",err)
@@ -144,8 +132,13 @@ func (repo *UsersRepository) Create(user *entities.CreateUserDto) (*entities.Use
 
 // Update обновляет информацию о пользователе.
 func (repo *UsersRepository) Update(user *entities.UpdateUserDto) (*entities.User, error) {
-	hash, err := HashPassword(user.Password)
+	hash, err := common.HashPassword(user.Password)
 
+	if err != nil{
+		log.Printf("%v",err)
+		return nil, common.InternalError
+	}
+	
 	_, err = repo.DataBase.Conn.Exec(
 		context.Background(),
 		`UPDATE "users" SET "email" = $2, "password" = $3 WHERE "id" = $1`,
