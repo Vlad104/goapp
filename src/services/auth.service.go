@@ -3,6 +3,8 @@ package services
 import (
 	"app/src/entities"
 	"app/src/common"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func NewAuthServices(us *UsersService) *AuthService {
@@ -13,15 +15,26 @@ type AuthService struct {
 	usersService *UsersService
 }
 
+func HashPassword(password string) (string, error) {
+    bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+    return string(bytes), err
+}
+
+func CheckPasswordHash(password, hash string) bool {
+    err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+    return err == nil
+}
+
 func (authService *AuthService) Login(loginDto *entities.LoginDto) (*entities.AuthDto, error) {
 	// Находим пользователя по электронной почте
 	user, err := authService.usersService.FindByEmail(loginDto.Email)
+
 	if err != nil {
 		return nil, common.ForbiddenError
 	}
 
 	// Проверяем совпадение паролей
-	if user.Password != loginDto.Password {
+	if !CheckPasswordHash(loginDto.Password, user.Password){
 		return nil, common.NotFoundError
 	}
 
