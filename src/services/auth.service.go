@@ -16,12 +16,13 @@ type AuthService struct {
 func (authService *AuthService) Login(loginDto *entities.LoginDto) (*entities.AuthDto, error) {
 	// Находим пользователя по электронной почте
 	user, err := authService.usersService.FindByEmail(loginDto.Email)
+
 	if err != nil {
 		return nil, common.ForbiddenError
 	}
 
 	// Проверяем совпадение паролей
-	if user.Password != loginDto.Password {
+	if !common.CheckPasswordHash(loginDto.Password, user.Password){
 		return nil, common.NotFoundError
 	}
 

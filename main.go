@@ -26,7 +26,7 @@ func main() {
 		return
 	}
 
-	usersService := services.NewUserServices(
+	usersService := services.NewUsersServices(
 		repositories.NewUserRepositories(
 			dataBase,
 		),

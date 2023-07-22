@@ -102,12 +102,18 @@ func (repo *UsersRepository) FindByEmail(email string) (*entities.User, error) {
 // Create создает нового пользователя.
 func (repo *UsersRepository) Create(user *entities.CreateUserDto) (*entities.User, error) {
 	var id pgtype.UUID
+	hash, err := common.HashPassword(user.Password)
+	
+	if err != nil{
+		log.Printf("%v",err)
+		return nil, common.InternalError
+	}
 
-	err := repo.DataBase.Conn.QueryRow(
+	err = repo.DataBase.Conn.QueryRow(
 		context.Background(),
 		`INSERT INTO "users" (email, password) VALUES ($1, $2) RETURNING "id"`,
 		user.Email,
-		user.Password,
+		hash,
 	).Scan(&id)
 
 	if err != nil {
@@ -118,7 +124,7 @@ func (repo *UsersRepository) Create(user *entities.CreateUserDto) (*entities.Use
 	result := entities.User{
 		ID:       id,
 		Email:    user.Email,
-		Password: user.Password,
+		Password: hash,
 	}
 
 	return &result, nil
@@ -126,12 +132,19 @@ func (repo *UsersRepository) Create(user *entities.CreateUserDto) (*entities.Use
 
 // Update обновляет информацию о пользователе.
 func (repo *UsersRepository) Update(user *entities.UpdateUserDto) (*entities.User, error) {
-	_, err := repo.DataBase.Conn.Exec(
+	hash, err := common.HashPassword(user.Password)
+
+	if err != nil{
+		log.Printf("%v",err)
+		return nil, common.InternalError
+	}
+	
+	_, err = repo.DataBase.Conn.Exec(
 		context.Background(),
 		`UPDATE "users" SET "email" = $2, "password" = $3 WHERE "id" = $1`,
 		user.ID,
 		user.Email,
-		user.Password,
+		hash,
 	)
 
 	if err != nil {
