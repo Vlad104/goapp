@@ -1,8 +1,12 @@
 package services
 
 import (
-	"app/src/entities"
 	"app/src/common"
+	"app/src/entities"
+	"log"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func NewAuthServices(us *UsersService) *AuthService {
@@ -26,8 +30,18 @@ func (authService *AuthService) Login(loginDto *entities.LoginDto) (*entities.Au
 		return nil, common.NotFoundError
 	}
 
-	// Создаем AccessToken (логика генерации accessToken будет реализована отдельно)
-	accessToken := "user login successful"
+	// Создаем AccessToken 
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	"sub": user.ID,
+	"iat": time.Now(),
+})
+
+	accessToken, err := token.SignedString(common.SecretKey)
+	
+	if err != nil {
+		log.Printf("%v", err)
+		return nil, common.InternalError
+	}
 
 	authDto := entities.AuthDto{
 		AccessToken: accessToken,
