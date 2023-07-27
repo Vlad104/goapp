@@ -33,7 +33,7 @@ func (authService *AuthService) Login(loginDto *entities.LoginDto) (*entities.Au
 	// Создаем AccessToken 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 	"sub": user.ID,
-	"iat": time.Now(),
+	"iat": time.Now().UnixMilli(),
 })
 
 	accessToken, err := token.SignedString(common.SecretKey)
@@ -46,7 +46,6 @@ func (authService *AuthService) Login(loginDto *entities.LoginDto) (*entities.Au
 	authDto := entities.AuthDto{
 		AccessToken: accessToken,
 	}
-
 	// Возвращаем AuthDto с AccessToken
 	return &authDto, nil
 }
