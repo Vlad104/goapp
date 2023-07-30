@@ -10,9 +10,9 @@ type User struct {
 	Password string      `json:"password"`
 }
 type UserDto struct {
-	ID    pgtype.UUID `json:"id"`
-	Email string      `json:"email"`
-	Password string   `json:"-"`
+	ID       pgtype.UUID `json:"id"`
+	Email    string      `json:"email"`
+	Password string      `json:"-"`
 }
 
 type CreateUserDto struct {

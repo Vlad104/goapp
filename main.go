@@ -3,6 +3,7 @@ package main
 import (
 	"app/src/controllers"
 	"app/src/database"
+	"app/src/middlewares"
 	"app/src/repositories"
 	"app/src/services"
 	"fmt"
@@ -61,11 +62,18 @@ func main() {
 
 		// Обработка DELETE-запроса
 		router.Delete("/{id}", usersController.Delete) // Удалить пользователя по идентификатору
+
+		router.With(middlewares.AuthMiddleware).Put("/", usersController.Update) // Обновить информацию о пользователе
+		router.With(middlewares.AuthMiddleware).Delete("/{id}", usersController.Delete) // Удалить пользователя по идентификатору
+		router.With(middlewares.AuthMiddleware).Get("/me", usersController.FindByMe)
 	})
 
 	router.Route("/auth", func(router chi.Router) {
 		router.Post("/login", authController.Login)
+		
+		
 	})
+
 
 	// Запуск HTTP-сервера и обработка запросов с помощью роутера
 	log.Fatal(http.ListenAndServe(":80", router))
