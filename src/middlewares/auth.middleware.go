@@ -6,8 +6,10 @@ import (
 	"app/src/common"
 	"app/src/entities"
 	"github.com/golang-jwt/jwt/v5"
-	"context"	
+	"context"
+	"time"
 )
+
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -27,6 +29,13 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		ctx := r.Context()
 
 		if authData, ok := token.Claims.(*entities.AuthData); ok && token.Valid {
+			expirationTime := time.Now().Add(common.ExpirationTime).Unix()
+
+			if authData.CreatedAt > expirationTime {
+				log.Print("Time end") // Дописать ошибку
+				common.HandleHttpError(w, common.ForbiddenError)
+				return 
+			}
 			ctx = context.WithValue(ctx, "authData", authData)
 		} else {
 			log.Printf("%v", err)

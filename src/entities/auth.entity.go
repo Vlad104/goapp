@@ -14,5 +14,6 @@ type AuthDto struct{
 
 type AuthData struct {
   	UserId string `json:"sub"`
-  	jwt.RegisteredClaims
+	CreatedAt int64 `json:"iat"` 
+  	jwt.RegisteredClaims // техническое поле для парсинга
 }
