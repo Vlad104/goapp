@@ -32,7 +32,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			expirationTime := time.Now().Add(common.ExpirationTime).Unix()
 
 			if authData.CreatedAt > expirationTime {
-				log.Print("Time end") // Дописать ошибку
+				log.Print("accessToken timed out")
 				common.HandleHttpError(w, common.ForbiddenError)
 				return 
 			}

@@ -27,12 +27,12 @@ func main() {
 		return
 	}
 
-	usersService := services.NewUsersServices(
-		repositories.NewUserRepositories(
-			dataBase,
-		),
-	)
+	usersRepository := repositories.NewUserRepositories(dataBase)
+	usersService := services.NewUsersServices(usersRepository)
 
+	answersService := services.NewAnswersService()
+	questionService := services.NewQuestionService(answersService)
+	questionController := controllers.NewQuestionsController(questionService)
 	// Создаем экземпляр контроллера пользователя
 	usersController := controllers.NewUsersController(usersService)
 
@@ -63,17 +63,18 @@ func main() {
 		// Обработка DELETE-запроса
 		router.Delete("/{id}", usersController.Delete) // Удалить пользователя по идентификатору
 
-		router.With(middlewares.AuthMiddleware).Put("/", usersController.Update) // Обновить информацию о пользователе
+		router.With(middlewares.AuthMiddleware).Put("/", usersController.Update)        // Обновить информацию о пользователе
 		router.With(middlewares.AuthMiddleware).Delete("/{id}", usersController.Delete) // Удалить пользователя по идентификатору
 		router.With(middlewares.AuthMiddleware).Get("/me", usersController.FindByMe)
 	})
 
 	router.Route("/auth", func(router chi.Router) {
 		router.Post("/login", authController.Login)
-		
-		
 	})
 
+	router.Route("/questions", func(router chi.Router) {
+		router.Post("/", questionController.Create)
+	})
 
 	// Запуск HTTP-сервера и обработка запросов с помощью роутера
 	log.Fatal(http.ListenAndServe(":80", router))
