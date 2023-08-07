@@ -99,7 +99,6 @@ func (uc *UsersController) Create(w http.ResponseWriter, r *http.Request) {
 	var createUserDto entities.CreateUserDto
 	err := json.NewDecoder(r.Body).Decode(&createUserDto)
 
-
 	if err != nil {
 		common.HandleHttpError(w, err)
 		return
@@ -150,47 +149,46 @@ func (uc *UsersController) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uc *UsersController) FindByMe(w http.ResponseWriter, r *http.Request) {
-    authData := r.Context().Value("authData").(*entities.AuthData) // получение authData из контекста запроса
+	authData := r.Context().Value("authData").(*entities.AuthData) // получение authData из контекста запроса
 
-    if authData == nil {
-        // Если authData равен nil, значит данные аутентификации не были добавлены в контекст,
-        // что может произойти, если middleware AuthMiddleware не был применен или возникли проблемы с аутентификацией.
-        // Обрабатываем ошибку, например, отправляем ответ с кодом ошибки HTTP 401 Unauthorized и сообщением об ошибке.
-        common.HandleHttpError(w, common.ForbiddenError)
-        return
-    }
+	if authData == nil {
+		// Если authData равен nil, значит данные аутентификации не были добавлены в контекст,
+		// что может произойти, если middleware AuthMiddleware не был применен или возникли проблемы с аутентификацией.
+		// Обрабатываем ошибку, например, отправляем ответ с кодом ошибки HTTP 401 Unauthorized и сообщением об ошибке.
+		common.HandleHttpError(w, common.ForbiddenError)
+		return
+	}
 
-    id, err := common.UUIDFromString(authData.UserId)
+	id, err := common.UUIDFromString(authData.UserId)
 
-    if err != nil {
-        // Если произошла ошибка при преобразовании строки идентификатора пользователя в UUID,
-        // тогда данные аутентификации содержат некорректный или невалидный идентификатор пользователя.
-        // Обрабатываем ошибку, например, отправляем ответ с кодом ошибки HTTP 400 Bad Request и сообщением об ошибке.
-        common.HandleHttpError(w, err)
-        return
-    }
+	if err != nil {
+		// Если произошла ошибка при преобразовании строки идентификатора пользователя в UUID,
+		// тогда данные аутентификации содержат некорректный или невалидный идентификатор пользователя.
+		// Обрабатываем ошибку, например, отправляем ответ с кодом ошибки HTTP 400 Bad Request и сообщением об ошибке.
+		common.HandleHttpError(w, err)
+		return
+	}
 
-    user, err := uc.service.FindById(id)
+	user, err := uc.service.FindById(id)
 
-    if err != nil {
-        // Если произошла ошибка при поиске пользователя в базе данных по идентификатору,
-        // тогда обрабатываем ошибку, например, отправляем ответ с кодом ошибки HTTP 500 Internal Server Error и сообщением об ошибке.
-        common.HandleHttpError(w, err)
-        return
-    }
+	if err != nil {
+		// Если произошла ошибка при поиске пользователя в базе данных по идентификатору,
+		// тогда обрабатываем ошибку, например, отправляем ответ с кодом ошибки HTTP 500 Internal Server Error и сообщением об ошибке.
+		common.HandleHttpError(w, err)
+		return
+	}
 
-    // Если все прошло успешно и пользователь был найден, то отправляем успешный ответ с данными пользователя.
-    // Например, можем использовать код HTTP 200 OK и преобразовать найденного пользователя в JSON и отправить его клиенту.
-    // Здесь предполагается, что у вас есть функция для преобразования данных пользователя в JSON, например, json.Marshal(users).
-    response, err := json.Marshal(user)
-    if err != nil {
-        http.Error(w, "Failed to marshal JSON", http.StatusInternalServerError)
-        return
-    }
+	// Если все прошло успешно и пользователь был найден, то отправляем успешный ответ с данными пользователя.
+	// Например, можем использовать код HTTP 200 OK и преобразовать найденного пользователя в JSON и отправить его клиенту.
+	// Здесь предполагается, что у вас есть функция для преобразования данных пользователя в JSON, например, json.Marshal(users).
+	response, err := json.Marshal(user)
+	if err != nil {
+		http.Error(w, "Failed to marshal JSON", http.StatusInternalServerError)
+		return
+	}
 
-    w.Write(response)
+	w.Write(response)
 }
-
 
 // Delete обрабатывает запрос на удаление пользователя по идентификатору.
 func (uc *UsersController) Delete(w http.ResponseWriter, r *http.Request) {

@@ -31,8 +31,8 @@ func main() {
 	usersService := services.NewUsersServices(usersRepository)
 
 	answersService := services.NewAnswersService()
-	questionService := services.NewQuestionService(answersService)
-	questionController := controllers.NewQuestionsController(questionService)
+	questionsService := services.NewQuestionService(answersService)
+	questionsController := controllers.NewQuestionsController(questionsService)
 	// Создаем экземпляр контроллера пользователя
 	usersController := controllers.NewUsersController(usersService)
 
@@ -73,7 +73,7 @@ func main() {
 	})
 
 	router.Route("/questions", func(router chi.Router) {
-		router.Post("/", questionController.Create)
+		router.With(middlewares.AuthMiddleware).Post("/", questionsController.Create)
 	})
 
 	// Запуск HTTP-сервера и обработка запросов с помощью роутера

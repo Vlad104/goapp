@@ -103,9 +103,9 @@ func (repo *UsersRepository) FindByEmail(email string) (*entities.User, error) {
 func (repo *UsersRepository) Create(user *entities.CreateUserDto) (*entities.User, error) {
 	var id pgtype.UUID
 	hash, err := common.HashPassword(user.Password)
-	
-	if err != nil{
-		log.Printf("%v",err)
+
+	if err != nil {
+		log.Printf("%v", err)
 		return nil, common.InternalError
 	}
 
@@ -134,11 +134,11 @@ func (repo *UsersRepository) Create(user *entities.CreateUserDto) (*entities.Use
 func (repo *UsersRepository) Update(user *entities.UpdateUserDto) (*entities.User, error) {
 	hash, err := common.HashPassword(user.Password)
 
-	if err != nil{
-		log.Printf("%v",err)
+	if err != nil {
+		log.Printf("%v", err)
 		return nil, common.InternalError
 	}
-	
+
 	_, err = repo.DataBase.Conn.Exec(
 		context.Background(),
 		`UPDATE "users" SET "email" = $2, "password" = $3 WHERE "id" = $1`,

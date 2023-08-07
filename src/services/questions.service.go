@@ -11,12 +11,11 @@ type QuestionService struct {
 	answersService *AnswersService
 }
 
-func NewQuestionService(answersService *AnswersService) (*QuestionService){
+func NewQuestionService(answersService *AnswersService) *QuestionService {
 	return &QuestionService{answersService}
-} 
+}
 
 func (qs *QuestionService) Create(cq *entities.CreateQuestionDto) (*entities.AnswerDto, error) {
 	answer, err := qs.answersService.Create(cq)
- 	return answer, err
+	return answer, err
 }
-

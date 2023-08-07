@@ -16,7 +16,7 @@ func NewQuestionsController(service *services.QuestionService) *QuestionsControl
 	return &QuestionsController{service}
 }
 
-func (qc QuestionsController) Create(w http.ResponseWriter, r *http.Request) {
+func (qc *QuestionsController) Create(w http.ResponseWriter, r *http.Request) {
 	var createQuestionDto entities.CreateQuestionDto
 
 	err := json.NewDecoder(r.Body).Decode(&createQuestionDto)
@@ -26,7 +26,7 @@ func (qc QuestionsController) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	question, err := qc.service.Create(&createQuestionDto) 
+	question, err := qc.service.Create(&createQuestionDto)
 
 	if err != nil {
 		common.HandleHttpError(w, err)

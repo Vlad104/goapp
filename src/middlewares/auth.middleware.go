@@ -1,19 +1,19 @@
 package middlewares
 
 import (
-	"net/http"
-	"log"
 	"app/src/common"
 	"app/src/entities"
-	"github.com/golang-jwt/jwt/v5"
 	"context"
+	"log"
+	"net/http"
 	"time"
-)
 
+	"github.com/golang-jwt/jwt/v5"
+)
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-    	accessTokenHeader := r.Header.Get("Authorization") // получение данных из заголовка
+		accessTokenHeader := r.Header.Get("Authorization") // получение данных из заголовка
 
 		if len(accessTokenHeader) == 0 || accessTokenHeader[:7] != "Bearer " { // проверка, что токен начинается с корректного обозначения типа
 			log.Printf("Could not get token %s", accessTokenHeader)
@@ -34,13 +34,13 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			if authData.CreatedAt > expirationTime {
 				log.Print("accessToken timed out")
 				common.HandleHttpError(w, common.ForbiddenError)
-				return 
+				return
 			}
 			ctx = context.WithValue(ctx, "authData", authData)
 		} else {
 			log.Printf("%v", err)
 			common.HandleHttpError(w, common.ForbiddenError)
-      		return
+			return
 		}
 
 		next.ServeHTTP(w, r.WithContext(ctx))

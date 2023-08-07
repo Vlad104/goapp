@@ -5,7 +5,6 @@ import (
 )
 
 type CreateQuestionDto struct {
-	UserID   pgtype.UUID `json:"userId"` // идентификатор пользователя задавшего вопрос
-	Text     string      `json:"text"`   // текст запроса
+	UserID pgtype.UUID `json:"userId"` // идентификатор пользователя задавшего вопрос
+	Text   string      `json:"text"`   // текст запроса
 }
-

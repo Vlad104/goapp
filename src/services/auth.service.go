@@ -26,18 +26,18 @@ func (authService *AuthService) Login(loginDto *entities.LoginDto) (*entities.Au
 	}
 
 	// Проверяем совпадение паролей
-	if !common.CheckPasswordHash(loginDto.Password, user.Password){
+	if !common.CheckPasswordHash(loginDto.Password, user.Password) {
 		return nil, common.NotFoundError
 	}
 
-	// Создаем AccessToken 
+	// Создаем AccessToken
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-	"sub": user.ID,
-	"iat": time.Now().Unix(),
-})
+		"sub": user.ID,
+		"iat": time.Now().Unix(),
+	})
 
 	accessToken, err := token.SignedString(common.SecretKey)
-	
+
 	if err != nil {
 		log.Printf("%v", err)
 		return nil, common.InternalError
