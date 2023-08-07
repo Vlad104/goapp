@@ -86,8 +86,8 @@ func (us *UsersService) Delete(id *pgtype.UUID) error {
 // toUserDto преобразует сущность User в UserDto.
 func toUserDto(user *entities.User) *entities.UserDto {
 	return &entities.UserDto{
-		ID:    user.ID,
-		Email: user.Email,
+		ID:       user.ID,
+		Email:    user.Email,
 		Password: user.Password,
 	}
 }
