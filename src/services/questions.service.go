@@ -2,20 +2,23 @@ package services
 
 import (
 	"app/src/entities"
+	"app/src/repositories"
 )
 
-// QuestionService.Create // вызывает AnswerService для генерации ответа
-// (в будущем будет добавлена логика по сохранению вопросов в базу данных)
-
-type QuestionService struct {
+type QuestionsService struct {
 	answersService *AnswersService
+	questionsRepository	*repositories.QuestionsRepository
 }
 
-func NewQuestionService(answersService *AnswersService) *QuestionService {
-	return &QuestionService{answersService}
+func NewQuestionService(answersService *AnswersService, questionsRepository	*repositories.QuestionsRepository) *QuestionsService {
+	return &QuestionsService{answersService, questionsRepository}
 }
 
-func (qs *QuestionService) Create(cq *entities.CreateQuestionDto) (*entities.AnswerDto, error) {
+func (qs *QuestionsService) Create(cq *entities.CreateQuestionDto) (*entities.AnswerDto, error) {
+	_, err := qs.questionsRepository.Create(cq)
+	if err != nil {
+		return nil, err
+	}
 	answer, err := qs.answersService.Create(cq)
 	return answer, err
 }
