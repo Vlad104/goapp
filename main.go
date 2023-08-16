@@ -29,12 +29,12 @@ func main() {
 
 	usersRepository := repositories.NewUserRepositories(dataBase)
 	usersService := services.NewUsersServices(usersRepository)
-
-	answersService := services.NewAnswersService()
-	questionsService := services.NewQuestionService(answersService)
-	questionsController := controllers.NewQuestionsController(questionsService)
-	// Создаем экземпляр контроллера пользователя
 	usersController := controllers.NewUsersController(usersService)
+
+	questionRepositiry := repositories.NewQuestionsRepositories(dataBase)
+	answersService := services.NewAnswersService()
+	questionsService := services.NewQuestionService(answersService,questionRepositiry)
+	questionsController := controllers.NewQuestionsController(questionsService)
 
 	authController := controllers.NewAuthController(services.NewAuthServices(usersService))
 
