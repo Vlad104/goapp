@@ -83,6 +83,16 @@ func (us *UsersService) Delete(id *pgtype.UUID) error {
 	return us.repo.Delete(id)
 }
 
+func (us *UsersService) Count() (int, error) {
+	question, err := us.repo.Count()
+
+	if err != nil {
+		return 0, err
+	}
+
+	return question, nil
+}
+
 // toUserDto преобразует сущность User в UserDto.
 func toUserDto(user *entities.User) *entities.UserDto {
 	return &entities.UserDto{

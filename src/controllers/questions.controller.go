@@ -16,8 +16,8 @@ func NewQuestionsController(service *services.QuestionsService) *QuestionsContro
 	return &QuestionsController{service}
 }
 
-func (qs *QuestionsController) CountQuestions(w http.ResponseWriter, r *http.Request){
-	questions, err := qs.service.CountQuestions()
+func (qs *QuestionsController) Count(w http.ResponseWriter, r *http.Request) {
+	questions, err := qs.service.Count()
 
 	if err != nil {
 		common.HandleHttpError(w, err)

@@ -17,7 +17,7 @@ func NewQuestionsRepositories(db *database.DataBase) *QuestionsRepository {
 	return &QuestionsRepository{db}
 }
 
-func(repo *QuestionsRepository) CountQuestions() (int, error) {
+func(repo *QuestionsRepository) Count() (int, error) {
   var count int
     err := repo.DataBase.Conn.QueryRow(
         context.Background(),
@@ -30,6 +30,7 @@ func(repo *QuestionsRepository) CountQuestions() (int, error) {
     }
     return count, nil
 }
+
 func (repo *QuestionsRepository) Create(question *entities.CreateQuestionDto) (*entities.Question, error) {
 	var id int64
 	var createdAt time.Time

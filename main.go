@@ -33,7 +33,7 @@ func main() {
 
 	questionRepositiry := repositories.NewQuestionsRepositories(dataBase)
 	answersService := services.NewAnswersService()
-	questionsService := services.NewQuestionService(answersService,questionRepositiry)
+	questionsService := services.NewQuestionService(answersService, questionRepositiry)
 	questionsController := controllers.NewQuestionsController(questionsService)
 
 	authController := controllers.NewAuthController(services.NewAuthServices(usersService))
@@ -53,6 +53,7 @@ func main() {
 		router.Get("/", usersController.FindAll)            // Получить всех пользователей
 		router.Get("/{id}", usersController.FindById)       // Получить пользователя по идентификатору
 		router.Get("/{email}", usersController.FindByEmail) // Получить пользователя по адресу электронной почты
+		router.Get("/count", usersController.Count)    // Получить кол-во всех пользователей
 
 		// Обработка POST-запроса
 		router.Post("/", usersController.Create) // Создать нового пользователя
@@ -66,6 +67,7 @@ func main() {
 		router.With(middlewares.AuthMiddleware).Put("/", usersController.Update)        // Обновить информацию о пользователе
 		router.With(middlewares.AuthMiddleware).Delete("/{id}", usersController.Delete) // Удалить пользователя по идентификатору
 		router.With(middlewares.AuthMiddleware).Get("/me", usersController.FindByMe)
+
 	})
 
 	router.Route("/auth", func(router chi.Router) {
@@ -74,7 +76,8 @@ func main() {
 
 	router.Route("/questions", func(router chi.Router) {
 		router.With(middlewares.AuthMiddleware).Post("/", questionsController.Create)
-		router.With(middlewares.AuthMiddleware).Get("/count", questionsController.CountQuestions)
+		router.Get("/count", questionsController.Count)
+
 	})
 
 	// Запуск HTTP-сервера и обработка запросов с помощью роутера
