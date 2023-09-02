@@ -16,6 +16,24 @@ func NewQuestionsController(service *services.QuestionsService) *QuestionsContro
 	return &QuestionsController{service}
 }
 
+func (qs *QuestionsController) CountQuestions(w http.ResponseWriter, r *http.Request){
+	questions, err := qs.service.CountQuestions()
+
+	if err != nil {
+		common.HandleHttpError(w, err)
+		return
+	}
+
+	response, err := json.Marshal(questions)
+
+	if err != nil {
+		common.HandleHttpError(w, err)
+		return
+	}
+
+	w.Write(response)
+}
+
 func (qc *QuestionsController) Create(w http.ResponseWriter, r *http.Request) {
 	var createQuestionDto entities.CreateQuestionDto
 

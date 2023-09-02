@@ -74,6 +74,7 @@ func main() {
 
 	router.Route("/questions", func(router chi.Router) {
 		router.With(middlewares.AuthMiddleware).Post("/", questionsController.Create)
+		router.With(middlewares.AuthMiddleware).Get("/count", questionsController.CountQuestions)
 	})
 
 	// Запуск HTTP-сервера и обработка запросов с помощью роутера
