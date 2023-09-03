@@ -21,6 +21,24 @@ func NewUsersController(service *services.UsersService) *UsersController {
 	return &UsersController{service}
 }
 
+func (uc *UsersController) Count(w http.ResponseWriter, r *http.Request){
+	questions, err := uc.service.Count()
+
+	if err != nil {
+		common.HandleHttpError(w, err)
+		return
+	}
+
+	response, err := json.Marshal(questions)
+
+	if err != nil {
+		common.HandleHttpError(w, err)
+		return
+	}
+
+	w.Write(response)
+}
+
 // FindAll обрабатывает запрос на получение всех пользователей.
 func (uc *UsersController) FindAll(w http.ResponseWriter, r *http.Request) {
 	users, err := uc.service.FindAll()

@@ -22,9 +22,9 @@ func (qs *QuestionsService) Create(cq *entities.CreateQuestionDto) (*entities.An
 	answer, err := qs.answersService.Create(cq)
 	return answer, err
 }
-func(qs *QuestionsService) CountQuestions() (int, error) {
+func(qs *QuestionsService) Count() (int, error) {
 	
-	question, err := qs.questionsRepository.CountQuestions()
+	question, err := qs.questionsRepository.Count()
 
 	if err != nil {
 		return 0, err

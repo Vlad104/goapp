@@ -130,6 +130,21 @@ func (repo *UsersRepository) Create(user *entities.CreateUserDto) (*entities.Use
 	return &result, nil
 }
 
+
+func(repo *UsersRepository) Count() (int, error) {
+  var count int
+    err := repo.DataBase.Conn.QueryRow(
+        context.Background(),
+        `SELECT COUNT(*) FROM "users"`,
+    ).Scan(&count)
+
+    if err != nil {
+        log.Printf("%v", err)
+        return 0, common.InternalError
+    }
+    return count, nil
+}
+
 // Update обновляет информацию о пользователе.
 func (repo *UsersRepository) Update(user *entities.UpdateUserDto) (*entities.User, error) {
 	hash, err := common.HashPassword(user.Password)
