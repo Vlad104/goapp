@@ -13,16 +13,16 @@ type QuestionsController struct {
 }
 
 func (qs *QuestionsController) CurrentCount(w http.ResponseWriter, r *http.Request) {
-	var userId entities.AvailableDto
+	var availableDto entities.AvailableDto
 
-	err := json.NewDecoder(r.Body).Decode(&userId)
+	err := json.NewDecoder(r.Body).Decode(&availableDto)
 
 	if err != nil {
 		common.HandleHttpError(w, err)
 		return
 	}
 
-	questions, err := qs.service.CurrentCount(&userId)
+	questions, err := qs.service.CurrentCount(&availableDto)
 
 	if err != nil {
 		common.HandleHttpError(w, err)
