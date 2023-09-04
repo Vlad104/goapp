@@ -12,11 +12,39 @@ type QuestionsController struct {
 	service *services.QuestionsService
 }
 
+func (qs *QuestionsController) CurrentCount(w http.ResponseWriter, r *http.Request) {
+	var userId entities.AvailableDto
+
+	err := json.NewDecoder(r.Body).Decode(&userId)
+
+	if err != nil {
+		common.HandleHttpError(w, err)
+		return
+	}
+
+	questions, err := qs.service.CurrentCount(&userId)
+
+	if err != nil {
+		common.HandleHttpError(w, err)
+		return
+	}
+
+	response, err := json.Marshal(questions)
+
+	if err != nil {
+		common.HandleHttpError(w, err)
+		return
+	}
+
+	w.Write(response)
+}
+
 func NewQuestionsController(service *services.QuestionsService) *QuestionsController {
 	return &QuestionsController{service}
 }
 
 func (qs *QuestionsController) Count(w http.ResponseWriter, r *http.Request) {
+	
 	questions, err := qs.service.Count()
 
 	if err != nil {
@@ -61,4 +89,3 @@ func (qc *QuestionsController) Create(w http.ResponseWriter, r *http.Request) {
 	w.Write(response)
 }
 
-//QuestionsController.Create  парсит параметры запроса "/questions"

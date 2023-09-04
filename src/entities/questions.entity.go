@@ -16,3 +16,6 @@ type Question struct {
 	CreatedAt string      `json:"createdAt"`
 }
 
+type AvailableDto struct {
+	UserId pgtype.UUID `json:"userId"`
+}
