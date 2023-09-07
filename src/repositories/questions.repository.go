@@ -47,24 +47,19 @@ func (repo *QuestionsRepository) FindAll() ([]entities.Question, error) {
 	questions := make([]entities.Question, 0, 0)
 
 	for rows.Next() {
-		var createdAt time.Time
-
 		question := entities.Question{}
 
 		err = rows.Scan(
 			&question.ID,
 			&question.UserId,
 			&question.Text,
-			&createdAt,
+			&question.CreatedAt,
 		)
-		// Преобразование в с помощью метода Format()
-		timeStr := createdAt.Format(common.SQLTimestampFormatTemplate)
 
 		if err != nil {
 			log.Printf("%v", err)
 			return nil, common.InternalError
 		}
-		question.CreatedAt = timeStr
 
 		questions = append(questions, question)
 	}
@@ -89,13 +84,11 @@ func (repo *QuestionsRepository) Create(question *entities.CreateQuestionDto) (*
 		return nil, common.InternalError
 	}
 
-	// Преобразование в строку с помощью метода Format()
-	timeStr := createdAt.Format(common.SQLTimestampFormatTemplate)
-
 	result := entities.Question{
+		ID:        id,
 		UserId:    question.UserID,
 		Text:      question.Text,
-		CreatedAt: timeStr,
+		CreatedAt: createdAt,
 	}
 
 	return &result, nil

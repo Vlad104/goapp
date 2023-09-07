@@ -53,7 +53,7 @@ func main() {
 		router.Get("/", usersController.FindAll)            // Получить всех пользователей
 		router.Get("/{id}", usersController.FindById)       // Получить пользователя по идентификатору
 		router.Get("/{email}", usersController.FindByEmail) // Получить пользователя по адресу электронной почты
-		router.Get("/count", usersController.Count)    // Получить кол-во всех пользователей
+		router.Get("/count", usersController.Count)         // Получить кол-во всех пользователей
 
 		// Обработка POST-запроса
 		router.Post("/", usersController.Create) // Создать нового пользователя
