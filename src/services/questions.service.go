@@ -28,7 +28,7 @@ func (qs *QuestionsService) RateLimit(userId *pgtype.UUID) error {
 	// Filter userId
 	for i := 0; i < len(questions); i++ {
 
-		if common.StringFromUUID(userId) == common.StringFromUUID(&questions[i].UserId){
+		if common.StringFromUUID(userId) == common.StringFromUUID(&questions[i].UserId) {
 			userQuestions = append(userQuestions, questions[i])
 		}
 	}
@@ -37,14 +37,7 @@ func (qs *QuestionsService) RateLimit(userId *pgtype.UUID) error {
 	// Filter Time
 	for i := 0; i < len(userQuestions); i++ {
 
-		createdAtTime, err := time.Parse(common.SQLTimestampFormatTemplate, userQuestions[i].CreatedAt)
-
-		if err != nil {
-			return common.InternalError
-		}
-
-		if time.Now().Unix()-createdAtTime.Unix() < common.QuestionsRateLimitInterval {
-
+		if time.Now().Unix()-userQuestions[i].CreatedAt.Unix() < common.QuestionsRateLimitInterval {
 			userIntervalQuestions = append(userIntervalQuestions, questions[i])
 
 		}
