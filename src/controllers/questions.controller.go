@@ -12,8 +12,8 @@ type QuestionsController struct {
 	service *services.QuestionsService
 }
 
-func (qs *QuestionsController) CurrentCount(w http.ResponseWriter, r *http.Request) {
-	var availableDto entities.AvailableDto
+func (qs *QuestionsController) AvailableCount(w http.ResponseWriter, r *http.Request) {
+	var availableDto entities.AvailableQuestionsDto
 
 	err := json.NewDecoder(r.Body).Decode(&availableDto)
 
@@ -44,7 +44,7 @@ func NewQuestionsController(service *services.QuestionsService) *QuestionsContro
 }
 
 func (qs *QuestionsController) Count(w http.ResponseWriter, r *http.Request) {
-	
+
 	questions, err := qs.service.Count()
 
 	if err != nil {
@@ -88,4 +88,3 @@ func (qc *QuestionsController) Create(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(response)
 }
-

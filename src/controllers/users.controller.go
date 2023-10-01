@@ -21,7 +21,7 @@ func NewUsersController(service *services.UsersService) *UsersController {
 	return &UsersController{service}
 }
 
-func (uc *UsersController) Count(w http.ResponseWriter, r *http.Request){
+func (uc *UsersController) Count(w http.ResponseWriter, r *http.Request) {
 	questions, err := uc.service.Count()
 
 	if err != nil {

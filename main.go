@@ -54,7 +54,7 @@ func main() {
 		router.Get("/{id}", usersController.FindById)       // Получить пользователя по идентификатору
 		router.Get("/{email}", usersController.FindByEmail) // Получить пользователя по адресу электронной почты
 		router.Get("/count", usersController.Count)         // Получить кол-во всех пользователей
-	
+
 		// Обработка POST-запроса
 		router.Post("/", usersController.Create) // Создать нового пользователя
 
@@ -77,7 +77,7 @@ func main() {
 	router.Route("/questions", func(router chi.Router) {
 		router.With(middlewares.AuthMiddleware).Post("/", questionsController.Create)
 		router.Get("/count", questionsController.Count)
-		router.Get("/available-count", questionsController.CurrentCount)
+		router.Get("/available-count", questionsController.AvailableCount)
 
 	})
 

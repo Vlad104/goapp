@@ -19,22 +19,23 @@ func NewQuestionService(answersService *AnswersService, questionsRepository *rep
 	return &QuestionsService{answersService, questionsRepository}
 }
 
-func (qs *QuestionsService) CurrentCount(availableDto *entities.AvailableDto) (int, error) {
+func (qs *QuestionsService) CurrentCount(availableDto *entities.AvailableQuestionsDto) (int, error) {
 	questions, err := qs.questionsRepository.FindAll()
+	var currentCount int
 
 	if err != nil {
 		return 0, err
 	}
+	// func countQuestions return count questions(int)
+	currentCount = common.MaxQuestionCount - qs.countAvailableQuestions(questions, &availableDto.UserId)
 
-	count := qs.countQuestions(questions,  &availableDto.UserId)
-
-	if common.MaxQuestionCount - count < 0{
+	if common.MaxQuestionCount-currentCount < 0 {
 		return 0, nil
 	}
-	return common.MaxQuestionCount - count, nil
+	return common.MaxQuestionCount - currentCount, nil
 }
 
-func (qs *QuestionsService) countQuestions(questions []entities.Question, userId *pgtype.UUID) int {
+func (qs *QuestionsService) countAvailableQuestions(questions []entities.Question, userId *pgtype.UUID) int {
 
 	userQuestions := qs.filterUserId(questions, userId)
 	userIntervalQuestions := qs.filterTime(userQuestions)
@@ -49,10 +50,10 @@ func (qs *QuestionsService) RateLimit(userId *pgtype.UUID) error {
 		return err
 	}
 
-	count := qs.countQuestions(questions, userId)
+	count := qs.countAvailableQuestions(questions, userId)
 
 	if count >= common.MaxQuestionCount {
-		log.Printf("У пользователя превышен порог запросов: %d > %d", count, common.MaxQuestionCount)
+		log.Printf("У пользователя %s превышен порог запросов: %d > %d", common.StringFromUUID(userId), count, common.MaxQuestionCount)
 		return common.InternalError
 	}
 
