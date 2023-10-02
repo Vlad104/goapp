@@ -29,10 +29,10 @@ func (qs *QuestionsService) CurrentCount(availableDto *entities.AvailableQuestio
 	// func countQuestions return count questions(int)
 	currentCount = common.MaxQuestionCount - qs.countAvailableQuestions(questions, &availableDto.UserId)
 
-	if common.MaxQuestionCount-currentCount < 0 {
+	if currentCount < 0 {
 		return 0, nil
 	}
-	return common.MaxQuestionCount - currentCount, nil
+	return currentCount, nil
 }
 
 func (qs *QuestionsService) countAvailableQuestions(questions []entities.Question, userId *pgtype.UUID) int {
