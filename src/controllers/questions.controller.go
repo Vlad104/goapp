@@ -22,7 +22,7 @@ func (qs *QuestionsController) AvailableCount(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	questions, err := qs.service.CurrentCount(&availableDto)
+	questions, err := qs.service.AvailableCount(&availableDto)
 
 	if err != nil {
 		common.HandleHttpError(w, err)

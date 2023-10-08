@@ -19,7 +19,7 @@ func NewQuestionService(answersService *AnswersService, questionsRepository *rep
 	return &QuestionsService{answersService, questionsRepository}
 }
 
-func (qs *QuestionsService) CurrentCount(availableDto *entities.AvailableQuestionsDto) (int, error) {
+func (qs *QuestionsService) AvailableCount(availableDto *entities.AvailableQuestionsDto) (int, error) {
 	questions, err := qs.questionsRepository.FindAll()
 	var currentCount int
 
@@ -79,7 +79,7 @@ func (qs *QuestionsService) filterTime(userQuestions []entities.Question) []enti
 
 	for i := 0; i < len(userQuestions); i++ {
 
-		createdAtTime, err := time.Parse(common.SQLTimestampFormatTemplate, userQuestions[i].CreatedAt)
+		createdAtTime, err := time.Parse(common.SQLTimestampFormatTemplate, string((userQuestions[i].CreatedAt)))
 
 		if err != nil {
 			log.Printf("%v", err)
