@@ -2,7 +2,7 @@ package common
 
 const PasswordHashRound = 14
 
-const QuestionsRateLimitInterval =  3600 * 24 
+const QuestionsRateLimitInterval = 3600 * 24
 
 const MaxQuestionCount = 10
 

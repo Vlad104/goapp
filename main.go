@@ -77,6 +77,7 @@ func main() {
 	router.Route("/questions", func(router chi.Router) {
 		router.With(middlewares.AuthMiddleware).Post("/", questionsController.Create)
 		router.Get("/count", questionsController.Count)
+		router.Get("/available-count", questionsController.AvailableCount)
 
 	})
 

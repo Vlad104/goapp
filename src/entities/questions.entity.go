@@ -1,8 +1,6 @@
 package entities
 
 import (
-	"time"
-
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -15,5 +13,9 @@ type Question struct {
 	ID        int64       `json:"id"`
 	UserId    pgtype.UUID `json:"userId"`
 	Text      string      `json:"text"`
-	CreatedAt time.Time   `json:"createdAt"`
+	CreatedAt string      `json:"createdAt"`
+}
+
+type AvailableQuestionsDto struct {
+	UserId pgtype.UUID `json:"userId"`
 }

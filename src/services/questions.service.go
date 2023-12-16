@@ -4,6 +4,7 @@ import (
 	"app/src/common"
 	"app/src/entities"
 	"app/src/repositories"
+	"log"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -18,14 +19,50 @@ func NewQuestionService(answersService *AnswersService, questionsRepository *rep
 	return &QuestionsService{answersService, questionsRepository}
 }
 
+func (qs *QuestionsService) AvailableCount(availableDto *entities.AvailableQuestionsDto) (int, error) {
+	questions, err := qs.questionsRepository.FindAll()
+	var currentCount int
+
+	if err != nil {
+		return 0, err
+	}
+	// func countQuestions return count questions(int)
+	currentCount = common.MaxQuestionCount - qs.countAvailableQuestions(questions, &availableDto.UserId)
+
+	if currentCount < 0 {
+		return 0, nil
+	}
+	return currentCount, nil
+}
+
+func (qs *QuestionsService) countAvailableQuestions(questions []entities.Question, userId *pgtype.UUID) int {
+
+	userQuestions := qs.filterUserId(questions, userId)
+	userIntervalQuestions := qs.filterTime(userQuestions)
+
+	return len(userIntervalQuestions)
+}
+
 func (qs *QuestionsService) RateLimit(userId *pgtype.UUID) error {
 	questions, err := qs.questionsRepository.FindAll()
+
 	if err != nil {
 		return err
 	}
 
+	count := qs.countAvailableQuestions(questions, userId)
+
+	if count >= common.MaxQuestionCount {
+		log.Printf("У пользователя %s превышен порог запросов: %d > %d", common.StringFromUUID(userId), count, common.MaxQuestionCount)
+		return common.InternalError
+	}
+
+	return nil
+}
+
+func (qs *QuestionsService) filterUserId(questions []entities.Question, userId *pgtype.UUID) []entities.Question {
 	userQuestions := make([]entities.Question, 0, 0)
-	// Filter userId
+
 	for i := 0; i < len(questions); i++ {
 
 		if common.StringFromUUID(userId) == common.StringFromUUID(&questions[i].UserId) {
@@ -33,22 +70,29 @@ func (qs *QuestionsService) RateLimit(userId *pgtype.UUID) error {
 		}
 	}
 
+	return userQuestions
+}
+
+func (qs *QuestionsService) filterTime(userQuestions []entities.Question) []entities.Question {
+
 	userIntervalQuestions := make([]entities.Question, 0, 0)
-	// Filter Time
+
 	for i := 0; i < len(userQuestions); i++ {
 
-		if time.Now().Unix()-userQuestions[i].CreatedAt.Unix() < common.QuestionsRateLimitInterval {
-			userIntervalQuestions = append(userIntervalQuestions, questions[i])
+		createdAtTime, err := time.Parse(common.SQLTimestampFormatTemplate, string((userQuestions[i].CreatedAt)))
+
+		if err != nil {
+			log.Printf("%v", err)
+			continue
+		}
+
+		if time.Now().Unix()-createdAtTime.Unix() < common.QuestionsRateLimitInterval {
+
+			userIntervalQuestions = append(userIntervalQuestions, userQuestions[i])
 
 		}
 	}
-
-	if len(userIntervalQuestions) > common.MaxQuestionCount {
-		return common.InternalError
-	}
-
-	return nil
-
+	return userIntervalQuestions
 }
 
 func (qs *QuestionsService) Create(cq *entities.CreateQuestionDto) (*entities.AnswerDto, error) {
@@ -63,6 +107,7 @@ func (qs *QuestionsService) Create(cq *entities.CreateQuestionDto) (*entities.An
 	answer, err := qs.answersService.Create(cq)
 	return answer, err
 }
+
 func (qs *QuestionsService) Count() (int, error) {
 
 	question, err := qs.questionsRepository.Count()
